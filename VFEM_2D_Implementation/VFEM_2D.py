@@ -6,6 +6,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import griddata
 from mpl_toolkits.axes_grid1 import make_axes_locatable
+from mpmath import *
+from math import *
 
 def mod_wrap(x, a):
     return (x % a)
@@ -14,7 +16,7 @@ def square_domain_boundary_condition(points):
     x = points[:, 0]
     y = points[:, 1]
 
-    g = np.ones(x.size)
+    g = np.zeros(x.size)
 
     return g
 
@@ -152,13 +154,23 @@ def plot_solution(mesh_file, u, save=False, plot_name=None):
     x = vertices[:, 0]
     y = vertices[:, 1]
     v = u
+    
+    v_exact = np.zeros(np.shape(x))
+    for n in range(1,301):
+        
+        v_exact = v_exact + 2 * (  ( 1/( np.cosh(pi*n)/2 ) ) * ( np.sin( (pi*n)/2 )**2 ) * ( np.sin( x*(n*pi) ) ) * ( np.sinh( (( y-np.ones(np.shape(y)) ) * (n*pi))/2) ) * ( np.sinh( (y*(n*pi))/2) ) ) / (pi*n)**3
 
     plt.figure(figsize=(5, 5))
     ax = plt.subplot(111)
     xi = np.linspace(min(x) - 0.01, max(x) + 0.001, 100)
     yi = np.linspace(min(y) - 0.01, max(y) + 0.001, 100)
+    
+    print(len(xi))
 
     zi = griddata((x, y), v, (xi[None, :], yi[:, None]), method='linear')
+    
+    zi_exact = griddata((x, y), v_exact, (xi[None, :], yi[:, None]), method='linear')
+    
     for i in range(len(elements)):
 
         for j in range(len(elements[i])):
@@ -169,7 +181,15 @@ def plot_solution(mesh_file, u, save=False, plot_name=None):
                 elements[i][(j + 1) % len(elements[i])]][1]]
             plt.plot(x, y, "k", linewidth=0.5)
 
-    im = plt.pcolormesh(xi, yi, zi, cmap = 'gnuplot')
+    im = plt.pcolormesh(xi, yi, zi, cmap = 'jet')
+    
+    print('Error')
+    
+    zi = zi[1:-1,1:-2]
+    
+    zi_exact = zi_exact[1:-1,1:-2]
+    
+    print(np.linalg.norm(zi_exact-zi)/np.sum(zi_exact-zi))
 
     divider = make_axes_locatable(ax)
     cax = divider.append_axes("right", size="5%", pad=0.05)
