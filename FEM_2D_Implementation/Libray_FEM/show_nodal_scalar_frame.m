@@ -19,6 +19,7 @@ if size(coordinates,2)==2
     end
     
 elseif size(coordinates,2)==3  %3D only testing
+    
     X=coordinates(:,1)+nodalDisplacement(:,1);
     Y=coordinates(:,2)+nodalDisplacement(:,2);
     Z=coordinates(:,3)+nodalDisplacement(:,3);

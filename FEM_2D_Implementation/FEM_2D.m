@@ -5,29 +5,22 @@ Copyright (c) 2015, Jan Valdman
 Copyright (c) 2014, Immanuel Anjam
 Copyright (c) 2012, Immanuel Anjam
 All rights reserved.
-
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
-
 * Redistributions of source code must retain the above copyright notice, this
   list of conditions and the following disclaimer.
-
 * Redistributions in binary form must reproduce the above copyright notice,
   this list of conditions and the following disclaimer in the documentation
   and/or other materials provided with the distribution
-
 * Neither the name of  nor the names of its
   contributors may be used to endorse or promote products derived from this
   software without specific prior written permission.
-
 * Neither the name of University of South Bohemia &  Institute of Information Theory and Automation, Czech Republic nor the names of its
   contributors may be used to endorse or promote products derived from this
   software without specific prior written permission.
-
 * Neither the name of University of Jyväskylä nor the names of its
   contributors may be used to endorse or promote products derived from this
   software without specific prior written permission.
-
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -50,8 +43,8 @@ clc
 add_paths
 
 %=======================================================
-all_levels = 3:3;                   % problem size 
-all_methods_on = [1 0 0 0];       % options
+all_levels = 5:5;                   % problem size 
+all_methods_on = [1 1 0 0];       % options
 RUN = kron(all_methods_on,ones(numel(all_levels),1));
 RUN(4:end,3) = 0;                 % exclude some evaluations for option 3
 RUN(5:end,4) = 0;                 % exclude some evaluations for option 4  
@@ -121,11 +114,11 @@ for le=1:length(all_levels)
 
             if graphs
                figure; 
-               subplot(1,2,1); show_nodal_scalar_frame(u_approx_C{le,m},mesh.nodes2coord,mesh.elems2nodes,m); axis square; view(3);
-               subplot(1,2,2); tricontour(mesh.nodes2coord,mesh.elems2nodes,u_approx_C{le,m},8); axis square;
+               show_nodal_scalar_frame(u_approx_C{le,m},mesh.nodes2coord,mesh.elems2nodes,m); axis square; view(3);
+               %subplot(1,2,2); tricontour(mesh.nodes2coord,mesh.elems2nodes,u_approx_C{le,m},8); axis square;
                switch m
                    case 1
-                       title('Contours')
+                       title('')
                    case 2
                        title('Contours')
                    case 3
@@ -139,16 +132,30 @@ for le=1:length(all_levels)
 end
 report_console(all_levels,all_ndofs,all_times,all_iters,RUN);
 
-% if all_methods_on(1) && all_methods_on(2)
-%     n = length(all_levels);
-%     err = zeros(2,n);
-%     for i=1:n
-%         err(1,i) = max(abs(u_approx_C{i,1} - u_approx_C{i,2}));
-%         err(2,i) = sum(abs(u_approx_C{i,1} - u_approx_C{i,2}))/length(u_approx_C{i,1});
-%     end
-%     format long
-%     err
-%     format short
-% end
+ if all_methods_on(1) && all_methods_on(2)
+     n = length(all_levels);
+     err = zeros(2,n);
+     for i=1:n
+         err(1,i) = max(abs(u_approx_C{i,1} - u_approx_C{i,2}));
+         err(2,i) = sum(abs(u_approx_C{i,1} - u_approx_C{i,2}))/length(u_approx_C{i,1});
+     end
+     format long
+     err
+     format short
+ end
 
 generate_table_paper_latex(all_levels,all_ndofs,all_times,all_iters,RUN)
+
+figure(10)
+X = mesh.nodes2coord(:,1);
+Y = mesh.nodes2coord(:,2);
+Z = zeros(size(X));
+one_vec =  ones(size(Y));
+for n=1:200
+    Z = Z + 2*(4*(sech((pi*n)/2))*(sin((pi*n)/2)^2)*(sin(X*(n*pi))).*(sinh(((Y-one_vec)*(n*pi))./2)).*(sinh((Y*(n*pi))./2)))./(pi*n)^3;;
+end
+
+h=trisurf(mesh.elems2nodes,X,Y,Z,'FaceColor','flat','LineWidth',0.1,'EdgeColor','w');
+
+norm(u_approx_C{1,1}-Z)
+
