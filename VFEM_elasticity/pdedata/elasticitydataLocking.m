@@ -64,6 +64,7 @@ function [u1,u2,u1x,u1y,u2x,u2y,sig11,sig12,sig22,f1,f2] = compute_rhs(lambda,mu
     %     c0 = ( int_\DOmega u1 ds + c2*\int_\DOmega y ds ) / |DOmega|
     %     c1 = ( int_\DOmega u2 ds - c2*\int_\DOmega x ds ) / |DOmega| 
     %     Omega = [0,1] * [0,1]
+    %{
     rotu = u2x - u1y;
     DOmega = 4;
     Iu1 = double(int(subs(u1,y,0),x,0,1) + int(subs(u1,y,1),x,0,1) ...
@@ -77,6 +78,8 @@ function [u1,u2,u1x,u1y,u2x,u2y,sig11,sig12,sig22,f1,f2] = compute_rhs(lambda,mu
     c1 = (Iu2-c2*Ix)/DOmega;
     u1 = u1-c0+c2*y;
     u2 = u2-c1-c2*x;    
+    %}
+
     
     % Eij
     E11 = u1x;

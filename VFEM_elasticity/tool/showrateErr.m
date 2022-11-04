@@ -17,11 +17,11 @@ str = cell(1,2*n);
 for i = 1:n
     var = upper(inputname(i+1));
     if mycontains(var, 'L2') 
-        stri = '||u-u_h||';  
+        stri = '||u-u_h||_{L2}';  
         r = showrate(h,varargin{i},'r-*','k.-');
     end
     if mycontains(var, 'H1')
-        stri = '|u-h_h|_1';  
+        stri = '|u-u_h|_1';  
         r = showrate(h,varargin{i},'b-s','k--');
     end
     if mycontains(var, 'H2')

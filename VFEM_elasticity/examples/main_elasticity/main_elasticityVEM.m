@@ -26,7 +26,7 @@ for k = 1:maxIt
     [u,info] = elasticityVEM(node,elem,pde,bdStruct,constrainttype);
     % record and plot
     N(k) = length(u);  h(k) = 1/sqrt(size(elem,1));
-    figure(1); 
+    figure(k); 
     showresult(node,elem,pde.uexact,u);
     drawnow;
     % compute errors in discrete L2 and H1 norms
@@ -36,7 +36,7 @@ for k = 1:maxIt
 end
 
 %% Plot convergence rates and display error table
-figure(2);
+figure(10);
 showrateErr(h,ErrL2,ErrH1);
 
 fprintf('\n');
