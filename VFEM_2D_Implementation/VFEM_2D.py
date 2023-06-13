@@ -33,7 +33,7 @@ def vem(mesh_file, rhs, boundary_condition):
 
     vertices = mesh['vertices']
 
-    elements = np.array([i[0].reshape(-1) - 1 for i in mesh['elements']])
+    elements = np.array([i[0].reshape(-1) - 1 for i in mesh['elements']], dtype=object)
 
     boundary = mesh['boundary'].T[0] - 1
 
@@ -48,7 +48,7 @@ def vem(mesh_file, rhs, boundary_condition):
 
     for el_id in range(elements.shape[0]):
 
-        vert_ids = elements[el_id]
+        vert_ids = elements[el_id].astype('uint16')
 
         verts = vertices[vert_ids]
 
@@ -115,7 +115,7 @@ def vem(mesh_file, rhs, boundary_condition):
             y = gis[i][1]
             K[x, y] = K[x, y] + lsr[counter]
             counter += 1
-
+            
         F[vert_ids] = F[vert_ids] + (rhs(centroid) * (area / n_sides))
 
     boundary_vals = boundary_condition(vertices[boundary])
@@ -148,7 +148,7 @@ def plot_solution(mesh_file, u, save=False, plot_name=None):
     mesh = scipy.io.loadmat(mesh_file)
 
     vertices = mesh['vertices']
-    elements = np.array([i[0].reshape(-1) - 1 for i in mesh['elements']])
+    elements = np.array([i[0].reshape(-1) - 1 for i in mesh['elements']], dtype=object)
     boundary = mesh['boundary'].T[0] - 1
 
     x = vertices[:, 0]
@@ -164,8 +164,6 @@ def plot_solution(mesh_file, u, save=False, plot_name=None):
     ax = plt.subplot(111)
     xi = np.linspace(min(x) - 0.01, max(x) + 0.001, 100)
     yi = np.linspace(min(y) - 0.01, max(y) + 0.001, 100)
-    
-    print(len(xi))
 
     zi = griddata((x, y), v, (xi[None, :], yi[:, None]), method='linear')
     
@@ -211,7 +209,8 @@ def main():
     
     for mesh in meshes:
         
-        mesh_file = 'meshes/'+mesh
+        print(mesh)
+        mesh_file = 'library_VFEM/meshes/'+mesh
         option = 's'
         u = None
     
